@@ -192,6 +192,7 @@ class DecoderRNN(BaseRNN):
                 bos_var = cast_type(bos_var, LONG, self.use_gpu)
                 decoder_input = bos_var.expand(batch_size*beam_size, 1)
 
+
         if mode == GEN and gen_type == 'beam':
             # if beam search, repeat the initial states of the RNN
             if self.rnn_cell is nn.LSTM:
