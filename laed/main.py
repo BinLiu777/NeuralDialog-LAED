@@ -22,10 +22,13 @@ class LossManager(object):
     def add_loss(self, loss):
         for key, val in loss.items():
             if val is not None and type(val) is not bool:
-                self.losses[key].append(val.data[0])
+                self.losses[key].append(val.item())
+                #self.losses[key].append(val.data[0])
 
     def add_backward_loss(self, loss):
-        self.backward_losses.append(loss.data[0])
+        self.backward_losses.append(loss.item())
+      #  self.backward_losses.append(loss.data[0])
+
 
     def clear(self):
         self.losses = defaultdict(list)
@@ -36,6 +39,8 @@ class LossManager(object):
         for key, loss in self.losses.items():
             if loss is None:
                 continue
+            print(type(loss[0]))
+            loss=np.array(loss)
             avg_loss = np.average(loss) if window is None else np.average(loss[-window:])
             str_losses.append("{} {:.3f}".format(key, avg_loss))
             if 'nll' in key:

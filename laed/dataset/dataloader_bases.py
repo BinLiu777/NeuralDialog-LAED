@@ -18,7 +18,8 @@ class DataLoader(object):
         self.name = name
 
     def _shuffle_indexes(self):
-        np.random.shuffle(self.indexes)
+        #print(self.indexes)
+        np.random.shuffle(list(self.indexes))
 
     def _shuffle_batch_indexes(self):
         np.random.shuffle(self.batch_indexes)

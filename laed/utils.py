@@ -8,7 +8,7 @@ import json
 import logging
 from datetime import datetime
 import torch
-from nltk.tokenize.moses import MosesDetokenizer
+from mosestokenizer  import MosesDetokenizer
 import nltk
 import sys
 from collections import defaultdict
@@ -102,7 +102,9 @@ def prepare_dirs_loggers(config, script=""):
     # save config
     param_path = os.path.join(config.session_dir, "params.json")
     with open(param_path, 'wb') as fp:
-        json.dump(config.__dict__, fp, indent=4, sort_keys=True)
+        d1 = json.dumps(config.__dict__,sort_keys=True,indent=4)
+        fp.write(d1.encode())
+       # json.dump(config.__dict__, fp, indent=4, sort_keys=True)
 
 
 def load_config(load_path):
