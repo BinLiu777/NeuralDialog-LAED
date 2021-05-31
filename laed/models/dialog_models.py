@@ -21,8 +21,8 @@ import numpy as np
 class LAED(BaseModel):
     def qzx_forward(self, out_utts):
         # output encoder
-        print(out_utts)
-        output_embedding = self.x_embedding(out_utts)
+        # print(out_utts)
+        output_embedding = self.x_embedding(out_utts.long())
         x_outs, x_last = self.x_encoder(output_embedding)
         x_last = x_last.transpose(0, 1).contiguous().view(-1, self.config.dec_cell_size)
         qy_logits = self.q_y(x_last).view(-1, self.config.k)
