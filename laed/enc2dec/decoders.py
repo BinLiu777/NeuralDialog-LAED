@@ -187,9 +187,10 @@ class DecoderRNN(BaseRNN):
             decoder_input = inputs
         else:
             # prepare the BOS inputs
-            bos_var = Variable(torch.LongTensor([self.sos_id]), volatile=True)
-            bos_var = cast_type(bos_var, LONG, self.use_gpu)
-            decoder_input = bos_var.expand(batch_size*beam_size, 1)
+            with torch.no_grad():
+                bos_var = Variable(torch.LongTensor([self.sos_id]))
+                bos_var = cast_type(bos_var, LONG, self.use_gpu)
+                decoder_input = bos_var.expand(batch_size*beam_size, 1)
 
         if mode == GEN and gen_type == 'beam':
             # if beam search, repeat the initial states of the RNN
