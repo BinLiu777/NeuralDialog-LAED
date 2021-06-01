@@ -8,7 +8,7 @@ import json
 import logging
 from datetime import datetime
 import torch
-from mosestokenizer  import MosesDetokenizer
+from mosestokenizer import MosesDetokenizer
 import nltk
 import sys
 from collections import defaultdict
@@ -145,8 +145,8 @@ def cast_type(var, dtype, use_gpu):
 
 
 def get_dekenize():
-    print("1111111111111")
-    return lambda x: MosesDetokenizer().detokenize(x, return_str=True)
+    de = MosesDetokenizer('en')
+    return lambda x: de(x)
 
 
 def get_tokenize():
