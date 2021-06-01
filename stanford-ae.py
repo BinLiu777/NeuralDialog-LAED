@@ -151,12 +151,12 @@ def main(config):
         print("Dumping test to {}".format(dump_file))
         dialog_utils.dump_latent(model, test_feed, config, f, num_batch=None)
 
-    with open(os.path.join(test_file), "wb") as f:
+    with open(os.path.join(test_file), "w") as f:
         print("Saving test to {}".format(test_file))
         dialog_utils.gen_with_cond(model, test_feed, config, num_batch=None,
                                    dest_f=f)
 
-    with open(os.path.join(test_file+'.txt'), "wb") as f:
+    with open(os.path.join(test_file+'.txt'), "w") as f:
         print("Saving test to {}".format(test_file))
         dialog_utils.generate(model, test_feed, config, evaluator, num_batch=None,
                                    dest_f=f)
