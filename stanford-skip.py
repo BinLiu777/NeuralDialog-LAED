@@ -72,7 +72,7 @@ train_arg.add_argument('--dropout', type=float, default=0.3)
 train_arg.add_argument('--improve_threshold', type=float, default=0.996)
 train_arg.add_argument('--patient_increase', type=float, default=2.0)
 train_arg.add_argument('--early_stop', type=str2bool, default=True)
-train_arg.add_argument('--max_epoch', type=int, default=1)
+train_arg.add_argument('--max_epoch', type=int, default=50)
 train_arg.add_argument('--loss_type', type=str, default="e2e")
 train_arg.add_argument('--include_eod', type=str2bool, default=True)
 
