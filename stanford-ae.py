@@ -71,7 +71,7 @@ train_arg.add_argument('--dropout', type=float, default=0.3)
 train_arg.add_argument('--improve_threshold', type=float, default=0.996)
 train_arg.add_argument('--patient_increase', type=float, default=4.0)
 train_arg.add_argument('--early_stop', type=str2bool, default=True)
-train_arg.add_argument('--max_epoch', type=int, default=100)
+train_arg.add_argument('--max_epoch', type=int, default=1)
 train_arg.add_argument('--loss_type', type=str, default="e2e")
 
 # MISC
