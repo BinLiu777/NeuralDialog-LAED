@@ -17,7 +17,7 @@ def get_name(text):
 
 
 def clear_symbol(text):
-    text = text.replace('\\n', '')
+    text = text.replace('\\n', '。')
     text = re.sub(r':[a-zA-Z]+:', '', text)  # 表情
     patten = re.compile(r'[\u4e00-\u9fa5a-zA-Z0-9\p{P}~]')
     res = re.findall(patten, text)
@@ -25,24 +25,27 @@ def clear_symbol(text):
     res = res.replace('*', '')
     res = res.replace('()', '')
     res = res.replace('(｡)', '')
+    res = res.replace('(｡•︿•｡)', '')
+    res = re.sub(r'[\p{P}]+。', '。', res)
     return res
 
 
 def clear_spec_sent(text):
     text = re.sub(r'[xw|您好][\s\S]*有什么可以帮您[。|~|！|？|呢、|呢？|的吗？]*', '', text)
-    text = re.sub(r'嗨~[\s\S]*非常高兴为您服务！', '', text)
-    text = re.sub(r'[您好|Hi]，我是[\s\S]*很高兴再次遇到您[！]*', '', text)
-    text = re.sub(r'[非常]*抱歉[哦]*，由于现在咨询人数较多，[\s\S]*正在逐一解答。', '', text)
-    text = re.sub(r'请您不要着急，耐心等待下吧。小鱼仔很快就来！', '', text)
-    text = re.sub(r'请您耐心等待下，不要着急。小鱼仔很快就来！', '', text)
-    text = re.sub(r'非常抱歉，咨询的人有些多，不能及时回复您，请您耐心等待下，[\s\S]*马上赶来~', '', text)
+    text = re.sub(r'嗨~[\s\S]*非常高兴为您服务[!]*', '', text)
+    text = re.sub(r'[Hi]*[您好]*[，|!]我是[\s\S]*很高兴再次遇到您[！]*', '', text)
+    text = re.sub(r'[非常]*抱歉[哦]*，由于现在咨询人数较多，[\s\S]*正在逐一解答[。]*', '', text)
+    text = re.sub(r'请您不要着急，耐心等待下吧。小鱼仔很快就来[！]*', '', text)
+    text = re.sub(r'请您耐心等待下，不要着急。小鱼仔很快就来[！]*', '', text)
+    text = re.sub(r'非常抱歉，咨询的人有些多，不能及时回复您，请您耐心等待下，[\s\S]*马上赶来[~]*', '', text)
     text = re.sub(r'请问还有其他[的问题]*可以帮您的吗[？|~|亲亲~]*', '', text)
     text = re.sub(r'[如果没有，]*麻烦您给个好评哦[~]*', '', text)
-    text = re.sub(r'如果没有请您稍后为我的服务作出评价，谢谢！', '', text)
-    text = re.sub(r'为了保证服务质量，[\s\S]*结束了本次服务。', '', text)
-    text = re.sub(r'如果您还有其他问题，请随时联系我哦！', '', text)
-    text = re.sub(r'遇见您是我最大的幸运。祝您学习愉快，再见！', '', text)
+    text = re.sub(r'如果没有请您稍后为我的服务作出评价，谢谢[！]*', '', text)
+    text = re.sub(r'为了保证服务质量，[\s\S]*结束了本次服务[。]*', '', text)
+    text = re.sub(r'如果您还有其他问题，请随时联系我哦[！]*', '', text)
+    text = re.sub(r'遇见您是我最大的幸运。祝您学习愉快，再见[！]*', '', text)
     text = re.sub(r'[不客气，您好，|嗨~]*如果我的服务有帮助到您，麻烦您给我一个好评哦~感谢您的[支持]*[！]*', '', text)
+    text = re.sub(r'亲~客服系统目前无法识别语音哦，很抱歉给您带来不便。麻烦您以文字的形式说明问题吧，我会尽快为您解决！谢谢配合哦[~]*', '', text)
     return text
 
 
@@ -53,6 +56,7 @@ def clear_address(text):
 
 def process_data(lines):
     data = []
+    raw_sents = []
     for i in tqdm(range(len(lines))):
         sess = {}
         sess['dialogue'] = []
@@ -60,9 +64,11 @@ def process_data(lines):
 
         saller_id, intent, text = lines[i].split('\t')
 
+        raw_sents.append(text)
         text = clear_symbol(text)
         text = clear_address(text)
         text = clear_spec_sent(text)
+        text = clear_symbol(text)   # clear_symbol必须前后处理两次
 
         patten = re.compile(r'(顾客：|{}：)'.format(saller_id))
         texts = re.split(patten, text)
@@ -73,7 +79,7 @@ def process_data(lines):
             if turn:
                 if turn == '顾客：' or turn == saller_id + '：':
                     try:
-                        if texts[j+1] == '顾客：' or texts[j+1] == saller_id + '：':
+                        if texts[j+1] == '顾客：' or texts[j+1] == saller_id + '：' or texts[j+1] == '' or texts[j+1] == '。':
                             continue
                     except:
                         continue
@@ -87,6 +93,8 @@ def process_data(lines):
                         text_merge[-1] += turn
                     except:
                         continue
+
+        raw_sents.append(text_merge)
 
         for j in range(len(text_merge)):
             dialogue = {}
@@ -107,6 +115,10 @@ def process_data(lines):
 
         if intent in intents:
             data.append(sess)
+
+    json_str = json.dumps(raw_sents, indent=4, ensure_ascii=False)
+    with open('customer_service/raw_sents.txt', 'w') as json_file:
+        json_file.write(json_str)
 
     train_data = []
     dev_data = []
