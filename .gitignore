@@ -101,3 +101,9 @@ ENV/
 .mypy_cache/
 .idea/
 logs/
+
+data/
+
+.DS_store
+
+test.py

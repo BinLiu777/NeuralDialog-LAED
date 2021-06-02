@@ -39,10 +39,29 @@ class CusSerCorpus(object):
         self._path = config.data_dir[0]  # logs
         self.max_utt_len = config.max_utt_len  # 40
         self.tokenize = get_chat_tokenize_zh()
-        self.train_corpus = self._read_file(os.path.join(self._path, 'customer_train.json'))
-        self.valid_corpus = self._read_file(os.path.join(self._path, 'customer_dev.json'))
-        self.test_corpus = self._read_file(os.path.join(self._path, 'customer_test.json'))
-        self._build_vocab(config.max_vocab_cnt)  # 10000
+        # TODO: 储存数据的时候，Pack类会变为dict储存，导致读入的数据丢失Pack类的属性
+        if os.path.exists(os.path.join(self._path, 'customer_train.list')) and False:
+            with open(os.path.join(self._path, 'customer_train.list'), 'r') as load_f:
+                self.train_corpus = json.load(load_f)
+                print(self.train_corpus[0])
+            with open(os.path.join(self._path, 'customer_dev.list'), 'r') as load_f:
+                self.valid_corpus = json.load(load_f)
+            with open(os.path.join(self._path, 'customer_test.list'), 'r') as load_f:
+                self.test_corpus = json.load(load_f)
+        else:
+            self.train_corpus = self._read_file(os.path.join(self._path, 'customer_train.json'))
+            self.valid_corpus = self._read_file(os.path.join(self._path, 'customer_dev.json'))
+            self.test_corpus = self._read_file(os.path.join(self._path, 'customer_test.json'))
+            # with open(os.path.join(self._path, 'customer_train.list'), 'w') as json_file:
+            #     json_str = json.dumps(self.train_corpus)
+            #     json_file.write(json_str)
+            # with open(os.path.join(self._path, 'customer_dev.list'), 'w') as json_file:
+            #     json_str = json.dumps(self.valid_corpus)
+            #     json_file.write(json_str)
+            # with open(os.path.join(self._path, 'customer_test.list'), 'w') as json_file:
+            #     json_str = json.dumps(self.test_corpus)
+            #     json_file.write(json_str)
+        self._build_vocab(config.max_vocab_cnt)  # 12000
         print("Done loading corpus")
 
     def _read_file(self, path):
@@ -88,6 +107,11 @@ class CusSerCorpus(object):
                 all_words.extend(turn.utt)
 
         vocab_count = Counter(all_words).most_common()
+
+        # with open('/Users/qzlbxyz/PycharmProjects/NeuralDialog-LAED/data/customer_service/raw_words.txt', 'w') as f:
+        #     for t, c in vocab_count:
+        #         f.write(str(t)+'\t'+str(c)+'\n')
+
         raw_vocab_size = len(vocab_count)
         discard_wc = np.sum([c for t, c, in vocab_count[max_vocab_cnt:]])
         vocab_count = vocab_count[0:max_vocab_cnt]  # 只取前max_vocab_cnt个词
