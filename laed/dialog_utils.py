@@ -216,7 +216,7 @@ def gen_with_cond(model, data_feed, config, num_batch=1, dest_f=None):
     if num_batch != None:
         config.batch_size = 3
 
-    de_tknize = utils.get_dekenize()
+    de_tknize = utils.get_dekenize_zh()
     data_feed.epoch_init(config, shuffle=False, verbose=False)
 
     logger.info("Generation: {} batches".format(data_feed.num_batch

@@ -4,12 +4,13 @@ from __future__ import unicode_literals  # at top of module
 from collections import Counter
 import numpy as np
 import json
-from laed.utils import get_tokenize, get_chat_tokenize, missingdict, Pack
+from laed.utils import get_tokenize, get_chat_tokenize, missingdict, Pack, get_chat_tokenize_zh
 import logging
 import os
 import itertools
 from collections import defaultdict
 import copy
+from tqdm import tqdm
 
 PAD = '<pad>'
 UNK = '<unk>'
@@ -37,7 +38,7 @@ class CusSerCorpus(object):
         self.config = config
         self._path = config.data_dir[0]  # logs
         self.max_utt_len = config.max_utt_len  # 40
-        self.tokenize = get_chat_tokenize()
+        self.tokenize = get_chat_tokenize_zh()
         self.train_corpus = self._read_file(os.path.join(self._path, 'customer_train.json'))
         self.valid_corpus = self._read_file(os.path.join(self._path, 'customer_dev.json'))
         self.test_corpus = self._read_file(os.path.join(self._path, 'customer_test.json'))
@@ -57,7 +58,8 @@ class CusSerCorpus(object):
         all_lens = []
         all_dialog_lens = []
         speaker_map = {'assistant': SYS, 'driver': USR, '小鱼仔': SYS, '顾客': USR}
-        for raw_dialog in data:
+
+        for raw_dialog in tqdm(data):
             dialog = [Pack(utt=bod_utt,
                            speaker=0,
                            meta=None)]
@@ -88,7 +90,7 @@ class CusSerCorpus(object):
         vocab_count = Counter(all_words).most_common()
         raw_vocab_size = len(vocab_count)
         discard_wc = np.sum([c for t, c, in vocab_count[max_vocab_cnt:]])
-        vocab_count = vocab_count[0:max_vocab_cnt]
+        vocab_count = vocab_count[0:max_vocab_cnt]  # 只取前max_vocab_cnt个词
 
         # create vocabulary list sorted by count
         print("Load corpus with train size %d, valid size %d, "

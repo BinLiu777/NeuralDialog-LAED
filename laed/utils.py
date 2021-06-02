@@ -13,6 +13,7 @@ import nltk
 import sys
 from collections import defaultdict
 from argparse import Namespace
+import jieba
 
 INT = 0
 LONG = 1
@@ -47,7 +48,7 @@ class Pack(dict):
         if 'QUERY' in utt or "RET" in utt:
             utt = str(utt)
             utt = utt.translate(None, ''.join([':', '"', "{", "}", "]", "["]))
-            utt = unicode(utt)
+            utt = str(utt)
         if include_domain:
             pack['utt'] = [bos_id, pack['speaker'], pack['domain']] + tokenize(utt) + [eos_id]
         else:
@@ -149,12 +150,29 @@ def get_dekenize():
     return lambda x: de(x)
 
 
+def get_dekenize_zh():
+    # TODO: Mose没有针对中文的合词功能，这里仍然用的英文，之后需要更改
+    de = MosesDetokenizer('zh')
+    return lambda x: de(x)
+
+
 def get_tokenize():
     return nltk.RegexpTokenizer(r'\w+|#\w+|<\w+>|%\w+|[^\w\s]+').tokenize
 
 
 def get_chat_tokenize():
     return nltk.RegexpTokenizer(r'\w+|<sil>|[^\w\s]+').tokenize
+
+
+def get_chat_tokenize_zh_(text):
+    text = text.replace('<sil>', '静音')
+    res = list(jieba.cut(text))
+    res = ['<sil>' if x == '静音' else x for x in res]
+    return res
+
+
+def get_chat_tokenize_zh():
+    return get_chat_tokenize_zh_
 
 
 class missingdict(defaultdict):
