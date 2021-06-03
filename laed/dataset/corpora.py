@@ -49,9 +49,9 @@ class CusSerCorpus(object):
             with open(os.path.join(self._path, 'customer_test.list'), 'r') as load_f:
                 self.test_corpus = json.load(load_f)
         else:
-            self.train_corpus = self._read_file(os.path.join(self._path, 'customer_train.json'))
-            self.valid_corpus = self._read_file(os.path.join(self._path, 'customer_dev.json'))
-            self.test_corpus = self._read_file(os.path.join(self._path, 'customer_test.json'))
+            self.train_corpus = self._read_file(os.path.join(self._path, 'customer_train_返学费规则.json'))
+            self.valid_corpus = self._read_file(os.path.join(self._path, 'customer_dev_返学费规则.json'))
+            self.test_corpus = self._read_file(os.path.join(self._path, 'customer_test_返学费规则.json'))
             # with open(os.path.join(self._path, 'customer_train.list'), 'w') as json_file:
             #     json_str = json.dumps(self.train_corpus)
             #     json_file.write(json_str)
