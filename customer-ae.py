@@ -6,7 +6,7 @@ import argparse
 import json
 import logging
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 import torch
 from laed import evaluators, utt_utils, dialog_utils
 from laed import main as engine
